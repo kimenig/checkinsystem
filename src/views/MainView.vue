@@ -1,0 +1,223 @@
+<template>
+  <div
+    class="main"
+    style="
+      width: 100%;
+      max-width: 1400px;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: repeat(20, 1fr);
+      margin: 0 auto;
+    "
+  >
+    <div>
+      store테스트
+      {{ storeAdmin }}
+    </div>
+    <div class="d-flex justify-content-between" style="grid-row: 1/3">
+      <span class="fs-2 m-2"
+        >이용문의 : <span class="text-danger">000-0000-0000</span></span
+      >
+      <div class="d-flex position-relative">
+        <button
+          type="button"
+          class="btn btn-outline-danger m-2 fs-2 shadow"
+          @click="adminLogout"
+        >
+          관리자 로그아웃
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-danger m-2 fs-2 shadow"
+          @click="goToLogin"
+        >
+          로그인
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-danger m-2 fs-2 shadow"
+          @click="goToSignup"
+        >
+          회원가입
+        </button>
+      </div>
+    </div>
+    <div
+      class="d-flex justify-content-center align-content-center"
+      style="grid-row: 3/7"
+    >
+      <div
+        class="container d-flex flex-wrap justify-content-center align-content-center"
+        style="width: 100%; height: 100%; text-align: center"
+      >
+        <img
+          src="../assets/mainLogo.png"
+          class="img-fluid"
+          alt="mainLogo"
+          style="height: 50%"
+        />
+        <p class="d-flex flex-wrap align-content-center" style="height: 50%">
+          <span class="fs-2 ms-4"> {{ storeAdmin.branchName }} 24</span>
+          <span class="fs-4 lh-lg">스터디카페</span>
+        </p>
+      </div>
+    </div>
+    <div
+      style="grid-row: 7/16; display: grid; grid-template-rows: repeat(4, 1fr)"
+    >
+      <div>
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 98%; height: 80%"
+        >
+          1회 이용권
+        </button>
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 98%; height: 80%"
+        >
+          기간 이용권
+        </button>
+      </div>
+
+      <div>
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 98%; height: 80%"
+        >
+          정액 이용권
+        </button>
+      </div>
+      <div>
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 98%; height: 80%"
+        >
+          사물함 이용권
+        </button>
+      </div>
+    </div>
+    <div
+      style="
+        grid-row: 16/21;
+        display: grid;
+        grid-template:
+          'a b c'
+          'a b d';
+      "
+    >
+      <div style="grid-area: a">
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 95%; height: 95%"
+        >
+          좌석 이동
+        </button>
+      </div>
+      <div style="grid-area: b">
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 95%; height: 95%"
+        >
+          퇴장하기
+        </button>
+      </div>
+      <div style="grid-area: c">
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 95%; height: 95%"
+        >
+          이용권 시간연장
+        </button>
+      </div>
+      <div style="grid-area: d">
+        <button
+          type="button"
+          class="btn btn-outline-danger fs-2 shadow"
+          style="width: 95%; height: 95%"
+        >
+          이용권 재발행
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss"></style>
+<script>
+//매장 관리자 세션 확인
+//불일치시 관리자 로그인
+//어떤 관지라냐에 따라  db쿼리 조절
+//로그인확인
+
+export default {
+  data() {
+    return {};
+  },
+  computed: {
+    storeAdmin() {
+      return this.$store.state.storeAdmin;
+    },
+  },
+  created() {
+    console.log(this.$store.state.storeAdmin);
+    if (this.$store.state.storeAdmin.isAdminLogined == 1) {
+      //
+    } else {
+      this.$swal.fire("관리자 로그인이 필요합니다.");
+      this.$router.push("/accesslogin", {});
+    }
+  },
+  methods: {
+    goToSignup() {
+      this.$router.push({ path: "/signup" });
+    },
+    goToLogin() {
+      this.$router.push({ path: "/login" });
+    },
+    adminLogout() {
+      this.$swal
+        .fire({
+          title: "관리자 비밀번호 입력",
+          input: "number",
+          confirmButtonText: "로그아웃",
+          cancelButtonText: "취소",
+        })
+        .then(async (result) => {
+          if (result.isConfirmed) {
+            await this.$api("/api/adminlogin", {
+              param: [this.$store.state.storeAdmin.aid, result.value],
+            }).then((res) => {
+              if (res.admin == "1") {
+                this.$store.dispatch("updateStoreAdmin", {
+                  aid: "",
+                  aBranch: "0",
+                  isAdminLogined: 0,
+                  branchName: "",
+                });
+                this.$swal.fire(`로그아웃 완료.`, "", "success");
+                this.$router.push({
+                  path: "/accesslogin",
+                  params: {},
+                });
+              } else {
+                this.$swal.fire("비밀번호가 일치하지 않습니다.", "", "info");
+              }
+            });
+          } else if (result.isDenied) {
+            this.$swal.fire("예기치 않은 오류 발생.", "", "info");
+          }
+        });
+    },
+  },
+};
+</script>
