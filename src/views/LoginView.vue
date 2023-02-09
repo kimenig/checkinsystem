@@ -100,6 +100,22 @@ export default {
       inputPassword: "",
     };
   },
+  computed: {
+    storeUser() {
+      return this.$store.state.storeUser;
+    },
+    isLoggedIn() {
+      return this.$store.state.isLoggnedIn;
+    },
+  },
+  created() {
+    if (this.$store.state.isLoggedIn) {
+      this.$swal.fire("이미 로그인 중입니다.");
+      this.$router.push("/main", {});
+    } else {
+      //
+    }
+  },
   mounted() {
     KioskBoard.init({
       keysArrayOfObjects: [
@@ -226,9 +242,33 @@ export default {
           })
           .then(async (result) => {
             if (result.isConfirmed) {
-              /*await this.$api("/api/productInsert", { param: [this.product] });*/
-              this.$swal.fire("로그인 완료.", "", "success");
-              this.$router.push({ path: "/main" });
+              await this.$api("/api/userlogin", {
+                param: [this.fullNumber, this.inputPassword],
+              }).then((res) => {
+                console.log(res);
+                console.log(res.isuser);
+                console.log(res.isuser == "1");
+
+                if (
+                  res.isuser == "1" &&
+                  res.userData[0].usingbranch ==
+                    this.$store.state.storeAdmin.aBranch
+                ) {
+                  this.$store.dispatch("login", {
+                    uid: this.fullNumber,
+                    uBranch: res.userData[0].usingbranch,
+                    isUserLogined: 1,
+                  });
+                  this.$swal.fire("로그인 완료.", "", "success");
+                  this.$router.push({ path: "/main" });
+                } else {
+                  this.$swal.fire(
+                    "휴대폰번호 또는 비밀번호가 올바르지 않습니다.",
+                    "",
+                    "info"
+                  );
+                }
+              });
             } else if (result.isDenied) {
               this.$swal.fire("Changes are not saved", "", "info");
             }

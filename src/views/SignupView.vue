@@ -259,16 +259,27 @@ export default {
         console.log("모두 승인");
         this.$swal
           .fire({
-            title: "가입",
+            title: "가입하기",
             showCancelButton: true,
             confirmButtonText: "가입",
             cancelButtonText: "취소",
           })
           .then(async (result) => {
             if (result.isConfirmed) {
-              /*await this.$api("/api/productInsert", { param: [this.product] });*/
-              this.$swal.fire("가입완료.", "", "success");
-              this.$router.push({ path: "/main" });
+              await this.$api("/api/usersignup", {
+                param: [
+                  this.fullNumber,
+                  this.inputPassword,
+                  this.$store.state.storeAdmin.aBranch,
+                ],
+              }).then((res) => {
+                this.$swal.fire(res.data, "", "success");
+                if (res.code == 1) {
+                  this.$router.push("/main", {});
+                }
+              });
+
+              //this.$router.push({ path: "/main" });
             } else if (result.isDenied) {
               this.$swal.fire("Changes are not saved", "", "info");
             }

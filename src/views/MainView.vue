@@ -13,10 +13,13 @@
     <div>
       store테스트
       {{ storeAdmin }}
+      {{ storeUser }}
+      {{ sessionTime }}
+      {{ isLoggedIn }}
     </div>
     <div class="d-flex justify-content-between" style="grid-row: 1/3">
       <span class="fs-2 m-2"
-        >이용문의 : <span class="text-danger">000-0000-0000</span></span
+        >이용문의 : <span class="text-danger">{{ storeAdmin.aid }} </span></span
       >
       <div class="d-flex position-relative">
         <button
@@ -29,10 +32,20 @@
         <button
           type="button"
           class="btn btn-outline-danger m-2 fs-2 shadow"
+          @click="goToLogout"
+          v-if="isLoggedIn"
+        >
+          로그아웃
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-danger m-2 fs-2 shadow"
           @click="goToLogin"
+          v-else
         >
           로그인
         </button>
+
         <button
           type="button"
           class="btn btn-outline-danger m-2 fs-2 shadow"
@@ -44,7 +57,7 @@
     </div>
     <div
       class="d-flex justify-content-center align-content-center"
-      style="grid-row: 3/7"
+      style="grid-row: 3/6"
     >
       <div
         class="container d-flex flex-wrap justify-content-center align-content-center"
@@ -60,6 +73,18 @@
           <span class="fs-2 ms-4"> {{ storeAdmin.branchName }} 24</span>
           <span class="fs-4 lh-lg">스터디카페</span>
         </p>
+      </div>
+    </div>
+    <div
+      class="d-flex justify-content-center align-content-center"
+      style="grid-row: 6/7"
+    >
+      <div
+        class="container d-flex flex-wrap justify-content-center align-content-center fs-5"
+        style="width: 100%; height: 100%; text-align: center"
+        v-if="isLoggedIn"
+      >
+        {{ storeUser.uid }} 님 {{ sessionTime }} 초 후 자동로그아웃 됩니다.
       </div>
     </div>
     <div
@@ -167,6 +192,15 @@ export default {
     storeAdmin() {
       return this.$store.state.storeAdmin;
     },
+    storeUser() {
+      return this.$store.state.storeUser;
+    },
+    sessionTime() {
+      return this.$store.state.sessionTime;
+    },
+    isLoggedIn() {
+      return this.$store.state.isLoggedIn;
+    },
   },
   created() {
     console.log(this.$store.state.storeAdmin);
@@ -183,6 +217,10 @@ export default {
     },
     goToLogin() {
       this.$router.push({ path: "/login" });
+    },
+    goToLogout() {
+      this.$store.dispatch("logout");
+      this.$router.push({ path: "/main" });
     },
     adminLogout() {
       this.$swal

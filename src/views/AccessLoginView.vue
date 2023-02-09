@@ -236,7 +236,7 @@ export default {
         console.log("모두 승인");
         this.$swal
           .fire({
-            title: "로그인",
+            title: "관리자로그인",
             showCancelButton: true,
             confirmButtonText: "로그인",
             cancelButtonText: "취소",
