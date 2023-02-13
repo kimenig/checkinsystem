@@ -17,21 +17,25 @@
       {{ sessionTime }}
       {{ isLoggedIn }}
     </div>
-    <div class="d-flex justify-content-between" style="grid-row: 1/3">
+    <div
+      class="d-flex justify-content-between"
+      style="grid-row: 1/3; margin: 1%"
+    >
       <span class="fs-2 m-2"
         >이용문의 : <span class="text-danger">{{ storeAdmin.aid }} </span></span
       >
       <div class="d-flex position-relative">
         <button
           type="button"
-          class="btn btn-outline-danger m-2 fs-2 shadow"
+          class="btn btn-outline-danger m-2 fs-2 shadow text-nowrap"
+          style=""
           @click="adminLogout"
         >
           관리자 로그아웃
         </button>
         <button
           type="button"
-          class="btn btn-outline-danger m-2 fs-2 shadow"
+          class="btn btn-outline-danger m-2 fs-2 shadow text-nowrap"
           @click="goToLogout"
           v-if="isLoggedIn"
         >
@@ -39,7 +43,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-outline-danger m-2 fs-2 shadow"
+          class="btn btn-outline-danger m-2 fs-2 shadow text-nowrap"
           @click="goToLogin"
           v-else
         >
@@ -48,7 +52,7 @@
 
         <button
           type="button"
-          class="btn btn-outline-danger m-2 fs-2 shadow"
+          class="btn btn-outline-danger m-2 fs-2 shadow text-nowrap"
           @click="goToSignup"
         >
           회원가입
@@ -88,13 +92,19 @@
       </div>
     </div>
     <div
-      style="grid-row: 7/16; display: grid; grid-template-rows: repeat(4, 1fr)"
+      style="
+        grid-row: 7/16;
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        margin: 1%;
+      "
     >
       <div>
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 98%; height: 80%"
+          style="width: 100%; height: 80%"
+          @click="goToOneTime"
         >
           1회 이용권
         </button>
@@ -103,7 +113,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 98%; height: 80%"
+          style="width: 100%; height: 80%"
         >
           기간 이용권
         </button>
@@ -113,7 +123,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 98%; height: 80%"
+          style="width: 100%; height: 80%"
         >
           정액 이용권
         </button>
@@ -122,7 +132,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 98%; height: 80%"
+          style="width: 100%; height: 80%"
         >
           사물함 이용권
         </button>
@@ -135,13 +145,14 @@
         grid-template:
           'a b c'
           'a b d';
+        margin: 1%;
       "
     >
       <div style="grid-area: a">
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 95%; height: 95%"
+          style="width: 100%; height: 100%"
         >
           좌석 이동
         </button>
@@ -150,7 +161,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 95%; height: 95%"
+          style="width: 100%; height: 100%"
         >
           퇴장하기
         </button>
@@ -159,7 +170,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 95%; height: 95%"
+          style="width: 100%; height: 100%"
         >
           이용권 시간연장
         </button>
@@ -168,7 +179,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 95%; height: 95%"
+          style="width: 100%; height: 100%"
         >
           이용권 재발행
         </button>
@@ -202,6 +213,7 @@ export default {
       return this.$store.state.isLoggedIn;
     },
   },
+
   created() {
     console.log(this.$store.state.storeAdmin);
     if (this.$store.state.storeAdmin.isAdminLogined == 1) {
@@ -221,6 +233,9 @@ export default {
     goToLogout() {
       this.$store.dispatch("logout");
       this.$router.push({ path: "/main" });
+    },
+    goToOneTime() {
+      this.$router.push({ path: "/onetimeticket" });
     },
     adminLogout() {
       this.$swal

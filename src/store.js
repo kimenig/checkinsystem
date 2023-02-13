@@ -33,7 +33,8 @@ const store = createStore({
       state.sessionTime--;
     },
     maintainSessionTime(state) {
-      state.sessionTime = 60;
+      //state.sessionTime = 60;
+      state.sessionTime = 600000;
     },
   },
   actions: {

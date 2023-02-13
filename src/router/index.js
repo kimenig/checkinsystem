@@ -5,6 +5,7 @@ import SignupView from "../views/SignupView.vue";
 import LoginView from "../views/LoginView.vue";
 import AccessLoginView from "../views/AccessLoginView.vue";
 import SelectStore from "../views/SelectStore.vue";
+import OneTimeTicketView from "../views/OneTimeTicketView.vue";
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const routes = [
     path: "/selectstore",
     name: "selectstore",
     component: SelectStore,
+  },
+  {
+    path: "/onetimeticket",
+    name: "onetimeticket",
+    component: OneTimeTicketView,
   },
 ];
 
