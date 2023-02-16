@@ -90,14 +90,139 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 400px;
-        height: 300px;
+        width: 600px;
+        height: 400px;
         background-color: white;
         border-radius: 10%;
+        padding: 30px;
       "
       v-if="isOneTimeVisible"
     >
-      <!--여기 작성 중-->
+      <div class="d-flex justify-content-between">
+        <p class="fs-3">{{ nowClickedSeat }} (1인석)</p>
+        <span style="font-size: 30px; cursor: pointer" @click="goToSelectSeat">
+          X
+        </span>
+      </div>
+      <div>
+        <p style="color: gray">요금제를 선택하세요.</p>
+      </div>
+      <div class="d-flex flex-wrap" style="gap: 15px">
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(1)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            4,000
+          </p>
+          <p>2시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(2)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            6,000
+          </p>
+          <p>4시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(3)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            7,000
+          </p>
+          <p>6시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+          "
+          @click="calcPayData(4)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            9,000
+          </p>
+          <p>8시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(5)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            11,000
+          </p>
+          <p>12시간</p>
+        </button>
+      </div>
     </div>
     <div
       style="
@@ -105,8 +230,8 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 400px;
-        height: 300px;
+        width: 600px;
+        height: 400px;
         background-color: white;
         border-radius: 10%;
       "
@@ -118,8 +243,8 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 400px;
-        height: 300px;
+        width: 600px;
+        height: 400px;
         background-color: white;
         border-radius: 10%;
       "
@@ -134,11 +259,11 @@ export default {
 
   data() {
     return {
-      isPopupVisible: true,
+      isPopupVisible: false,
       isOneTimeVisible: false,
       isTimeLimitVisible: false,
       isDayLimitVisible: false,
-
+      nowClickedSeat: 0,
       seatMap: {
         seat1: { id: 1, coords: [74, 521, 107, 554], isUsing: false },
         seat2: { id: 2, coords: [74, 460, 107, 495], isUsing: false },
@@ -183,9 +308,84 @@ export default {
 
     //가져와서 nowUsingSeat에 넣기
     this.getSeat();
+
+    //테스트
   },
   mounted() {},
   methods: {
+    async calcPayData(payType) {
+      const currentDate = new Date();
+      const startDate = currentDate.getTime();
+      let endDate = 0;
+      let expirationDate = 0;
+      if ([1, 2, 3, 4, 5].includes(payType)) {
+        switch (payType) {
+          case 1:
+            endDate = startDate + 2 * 60 * 60 * 1000;
+            break;
+          case 2:
+            endDate = startDate + 4 * 60 * 60 * 1000;
+            break;
+          case 3:
+            endDate = startDate + 6 * 60 * 60 * 1000;
+            break;
+          case 4:
+            endDate = startDate + 8 * 60 * 60 * 1000;
+            break;
+          case 5:
+            endDate = startDate + 12 * 60 * 60 * 1000;
+            break;
+          default:
+            break;
+        }
+        console.log(startDate);
+        console.log(new Date(startDate));
+        console.log(endDate);
+        console.log(new Date(endDate));
+
+        console.log("Processing payment for payType 1, 2, 3, or 4");
+
+        //1회용 db업로드
+        this.updatePay(1, startDate, endDate, expirationDate);
+      } else if ([6, 7, 8].includes(payType)) {
+        // code block for payType 5, 6, 7, or 8
+        console.log("Processing payment for payType 5, 6, 7, or 8");
+      } else if ([9, 10, 11, 12].includes(payType)) {
+        // code block for payType 9, 10, 11, or 12
+        console.log("Processing payment for payType 9, 10, 11, or 12");
+      } else {
+        // code block for any other payType value
+        console.log("Invalid payType value");
+      }
+    },
+    async updatePay(payType, startdate, enddate, expirationdate) {
+      try {
+        await this.$api("/api/updatepay", {
+          param: [
+            payType,
+            startdate,
+            expirationdate,
+            enddate,
+            this.nowClickedSeat,
+            this.storeUser.uBranch,
+            this.storeUser.uid,
+          ],
+        }).then((res) => {
+          console.log(res);
+          this.$api("/api/updateseat", {
+            param: [
+              1,
+              startdate,
+              enddate,
+              this.storeUser.uid,
+              this.nowClickedSeat,
+            ],
+          });
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
     exitPopup() {
       this.isPopupVisible = false;
     },
@@ -210,7 +410,12 @@ export default {
       this.isPopupVisible = false;
       this.isDayLimitVisible = true;
     },
-
+    goToSelectSeat() {
+      this.isPopupVisible = false;
+      this.isOneTimeVisible = false;
+      this.isTimeLimitVisible = false;
+      this.isDayLimitVisible = false;
+    },
     resetExpireSeat() {},
     async getSeat() {
       try {
@@ -234,7 +439,7 @@ export default {
       }
     },
     seatclick(seatnumber) {
-      console.log(seatnumber);
+      this.nowClickedSeat = seatnumber;
       //fire하고 db로 보내기
       console.log(this.seatMap[`seat${seatnumber}`].isUsing);
       if (this.seatMap[`seat${seatnumber}`].isUsing) {
@@ -243,6 +448,7 @@ export default {
         this.$swal
           .fire({
             title: `${seatnumber}번 좌석`,
+            showCancelButton: true,
             confirmButtonText: "사용하기",
             cancelButtonText: "취소",
           })
