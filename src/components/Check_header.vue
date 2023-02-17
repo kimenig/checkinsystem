@@ -83,6 +83,9 @@ export default {
     updateDate() {
       this.date = new Date().toLocaleString();
     },
+    goToMain() {
+      this.$router.push({ path: "/main" });
+    },
   },
 };
 </script>

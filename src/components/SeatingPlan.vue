@@ -346,7 +346,8 @@ export default {
         console.log("Processing payment for payType 1, 2, 3, or 4");
 
         //1회용 db업로드
-        this.updatePay(1, startDate, endDate, expirationDate);
+        this.updatePay("1", startDate, endDate, expirationDate);
+        this.updateSeat(startDate, endDate);
       } else if ([6, 7, 8].includes(payType)) {
         // code block for payType 5, 6, 7, or 8
         console.log("Processing payment for payType 5, 6, 7, or 8");
@@ -372,15 +373,25 @@ export default {
           ],
         }).then((res) => {
           console.log(res);
-          this.$api("/api/updateseat", {
-            param: [
-              1,
-              startdate,
-              enddate,
-              this.storeUser.uid,
-              this.nowClickedSeat,
-            ],
-          });
+          console.log("updatepay complete");
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async updateSeat(startdate, enddate) {
+      try {
+        await this.$api("/api/updateseat", {
+          param: [
+            1,
+            startdate,
+            enddate,
+            this.storeUser.uid,
+            this.nowClickedSeat,
+          ],
+        }).then((res) => {
+          console.log(res);
+          console.log("updateseat complete");
         });
       } catch (error) {
         console.log(error);
@@ -457,6 +468,15 @@ export default {
               await this.$api("/api/getusertickettype", {
                 param: [this.storeUser.uid],
               }).then((res) => {
+                const userInfo = res.getusertickettype[0];
+                console.log(userInfo);
+                if (userInfo.usingseatnumber !== 0) {
+                  this.$swal.fire(
+                    `이미 ${userInfo.usingseatnumber}번 좌석 사용중입니다.`
+                  );
+                } else {
+                  //
+                }
                 if (res.getusertickettype[0].tickettype == 0) {
                   //티켓이 없을경우
                   this.isPopupVisible = true;

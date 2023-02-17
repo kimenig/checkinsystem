@@ -162,6 +162,7 @@
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
           style="width: 100%; height: 100%"
+          @click="goToExitSeat"
         >
           퇴장하기
         </button>
@@ -236,6 +237,11 @@ export default {
     },
     goToOneTime() {
       this.$router.push({ path: "/onetimeticket" });
+    },
+    goToExitSeat() {
+      this.$router.push({
+        path: "/exitseat",
+      });
     },
     adminLogout() {
       this.$swal
