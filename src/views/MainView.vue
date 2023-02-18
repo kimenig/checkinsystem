@@ -143,8 +143,8 @@
         grid-row: 16/21;
         display: grid;
         grid-template:
-          'a b c'
-          'a b d';
+          'a b'
+          'a b';
         margin: 1%;
       "
     >
@@ -165,24 +165,6 @@
           @click="goToExitSeat"
         >
           퇴장하기
-        </button>
-      </div>
-      <div style="grid-area: c">
-        <button
-          type="button"
-          class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 100%"
-        >
-          이용권 시간연장
-        </button>
-      </div>
-      <div style="grid-area: d">
-        <button
-          type="button"
-          class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 100%"
-        >
-          이용권 재발행
         </button>
       </div>
     </div>
@@ -236,7 +218,7 @@ export default {
       this.$router.push({ path: "/main" });
     },
     goToOneTime() {
-      this.$router.push({ path: "/onetimeticket" });
+      this.$router.push({ path: "/onetimeticket", query: { ctt: 1 } });
     },
     goToExitSeat() {
       this.$router.push({

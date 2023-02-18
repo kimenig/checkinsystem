@@ -99,5 +99,6 @@ export default {
       this.$store.dispatch("maintainSessionTime");
     }
   },
+  mounted() {},
 };
 </script>

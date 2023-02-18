@@ -286,6 +286,7 @@ export default {
         seat19: { id: 19, coords: [505, 451, 539, 486], isUsing: false },
       },
       nowUsingSeat: [],
+      clickedTicketType: 0,
     };
   },
   computed: {
@@ -311,7 +312,10 @@ export default {
 
     //테스트
   },
-  mounted() {},
+  mounted() {
+    this.clickedTicketType = this.$route.query.ctt;
+    console.log(this.clickedTicketType);
+  },
   methods: {
     async calcPayData(payType) {
       const currentDate = new Date();
@@ -479,7 +483,20 @@ export default {
                 }
                 if (res.getusertickettype[0].tickettype == 0) {
                   //티켓이 없을경우
-                  this.isPopupVisible = true;
+                  switch (this.clickedTicketType) {
+                    case "1":
+                      this.isOneTimeVisible = true;
+                      break;
+                    case "2":
+                      this.isTimeLimitVisible = true;
+                      break;
+                    case "3":
+                      this.isDayLimitVisible = true;
+
+                      break;
+                    default:
+                      break;
+                  }
                 } else if (res.getusertickettype[0].tickettype == 1) {
                   //1회용
                 } else if (res.getusertickettype[0].tickettype == 2) {
