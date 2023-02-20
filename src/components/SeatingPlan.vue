@@ -234,9 +234,136 @@
         height: 400px;
         background-color: white;
         border-radius: 10%;
+        padding: 30px;
       "
       v-if="isTimeLimitVisible"
-    ></div>
+    >
+      <div class="d-flex justify-content-between">
+        <p class="fs-3">{{ nowClickedSeat }} (1인석)</p>
+        <span style="font-size: 30px; cursor: pointer" @click="goToSelectSeat">
+          X
+        </span>
+      </div>
+      <div>
+        <p style="color: gray">요금제를 선택하세요.</p>
+      </div>
+      <div class="d-flex flex-wrap" style="gap: 15px">
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(6)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            25,000
+          </p>
+          <p>24시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(7)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            40,000
+          </p>
+          <p>40시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(8)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            55,000
+          </p>
+          <p>60시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+          "
+          @click="calcPayData(9)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            100,000
+          </p>
+          <p>100시간</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(10)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            140,000
+          </p>
+          <p>150시간</p>
+        </button>
+      </div>
+    </div>
     <div
       style="
         position: absolute;
@@ -309,7 +436,6 @@ export default {
 
     //가져와서 nowUsingSeat에 넣기
     this.getSeat();
-
     //테스트
   },
   mounted() {
@@ -342,35 +468,78 @@ export default {
           default:
             break;
         }
-        console.log(startDate);
-        console.log(new Date(startDate));
-        console.log(endDate);
-        console.log(new Date(endDate));
-
-        console.log("Processing payment for payType 1, 2, 3, or 4");
-
         //1회용 db업로드
         this.updatePay("1", startDate, endDate, expirationDate);
         this.updateSeat(startDate, endDate);
-      } else if ([6, 7, 8].includes(payType)) {
-        // code block for payType 5, 6, 7, or 8
-        console.log("Processing payment for payType 5, 6, 7, or 8");
-      } else if ([9, 10, 11, 12].includes(payType)) {
-        // code block for payType 9, 10, 11, or 12
-        console.log("Processing payment for payType 9, 10, 11, or 12");
+      } else if ([6, 7, 8, 9, 10].includes(payType)) {
+        //정액제제
+        switch (payType) {
+          case 6:
+            expirationDate = 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 7:
+            expirationDate = 40 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 8:
+            expirationDate = 60 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 9:
+            expirationDate = 100 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 10:
+            expirationDate = 150 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          default:
+            break;
+        }
+        this.updatePay("2", startDate, endDate, expirationDate);
+        this.updateSeat(startDate, endDate);
+      } else if ([11, 12, 13, 14, 15].includes(payType)) {
+        //기간제
+        switch (payType) {
+          case 11:
+            expirationDate = 3 * 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 12:
+            expirationDate = 7 * 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 13:
+            expirationDate = 14 * 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 14:
+            expirationDate = 28 * 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          case 15:
+            expirationDate = 60 * 24 * 60 * 60 * 1000;
+            endDate = startDate + expirationDate;
+            break;
+          default:
+            break;
+        }
+        this.updatePay("3", startDate, endDate, expirationDate);
+        this.updateSeat(startDate, endDate);
       } else {
         // code block for any other payType value
         console.log("Invalid payType value");
       }
     },
-    async updatePay(payType, startdate, enddate, expirationdate) {
+    updatePay(payType, startdate, enddate, expirationdate) {
       try {
-        await this.$api("/api/updatepay", {
+        this.$api("/api/updatepay", {
           param: [
             payType,
             startdate,
-            expirationdate,
             enddate,
+            expirationdate,
             this.nowClickedSeat,
             this.storeUser.uBranch,
             this.storeUser.uid,
@@ -383,9 +552,10 @@ export default {
         console.log(error);
       }
     },
-    async updateSeat(startdate, enddate) {
+    updateSeat(startdate, enddate) {
+      console.log("실행됨?");
       try {
-        await this.$api("/api/updateseat", {
+        this.$api("/api/updateseat", {
           param: [
             1,
             startdate,
@@ -431,18 +601,20 @@ export default {
       this.isTimeLimitVisible = false;
       this.isDayLimitVisible = false;
     },
-    resetExpireSeat() {},
+
     async getSeat() {
       try {
         await this.$api("/api/getseat", {}).then((res) => {
           const filteredRes = res.getseat.filter((item) => {
             return item.isusing > 0;
           });
+          console.log(filteredRes);
           const nowDate = new Date();
           filteredRes.forEach(async (elem, index) => {
             //resetseat
-            if (elem.enddate !== null && elem.enddate < nowDate) {
+            if (elem.enddate !== null && elem.enddate < nowDate.getTime()) {
               await this.$api("/api/resetseat", { param: elem.seatnumber });
+              console.log(elem.seatnumber);
               await filteredRes.splice(index, 1);
             } else {
               this.seatMap[`seat${elem.seatnumber}`].isUsing = true;

@@ -114,6 +114,7 @@
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
           style="width: 100%; height: 80%"
+          @click="goToPeriodicTime"
         >
           기간 이용권
         </button>
@@ -124,6 +125,7 @@
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
           style="width: 100%; height: 80%"
+          @click="goToFlatTime"
         >
           정액 이용권
         </button>
@@ -219,6 +221,12 @@ export default {
     },
     goToOneTime() {
       this.$router.push({ path: "/onetimeticket", query: { ctt: 1 } });
+    },
+    goToFlatTime() {
+      this.$router.push({ path: "/onetimeticket", query: { ctt: 2 } });
+    },
+    goToPeriodicTime() {
+      this.$router.push({ path: "/onetimeticket", query: { ctt: 3 } });
     },
     goToExitSeat() {
       this.$router.push({

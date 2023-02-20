@@ -57,6 +57,7 @@ export default {
       //로그아웃 에셋가져오기
       //db에 퇴장 보내기
       //1회용 요금
+
       this.getUserSeat();
       //정액 요금
       //기간제 요금
@@ -103,6 +104,9 @@ export default {
               break;
             case 2:
               //정액제
+              //남은시간 갱신
+              //작성중
+              //퇴실 작업
               //남은시간
               break;
             case 3:
