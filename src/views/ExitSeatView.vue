@@ -33,7 +33,9 @@ export default {
     Check_header,
   },
   data() {
-    return {};
+    return {
+      seatStartTime: 0,
+    };
   },
   computed: {
     storeAdmin() {
@@ -49,6 +51,7 @@ export default {
       return this.$store.state.isLoggedIn;
     },
   },
+  created() {},
   mounted() {
     if (this.storeUser.isUserLogined == 1) {
       //로그인 상태
@@ -57,7 +60,11 @@ export default {
       //로그아웃 에셋가져오기
       //db에 퇴장 보내기
       //1회용 요금
-
+      this.$api("/api/getseattime", {
+        param: [this.storeUser.uid],
+      }).then((res) => {
+        this.seatStartTime = res.getseattime[0].startdate;
+      });
       this.getUserSeat();
       //정액 요금
       //기간제 요금
@@ -76,20 +83,15 @@ export default {
     }
   },
   methods: {
-    async getUserSeat() {
-      await this.$api("/api/getusertickettype", {
+    getUserSeat() {
+      this.$api("/api/getusertickettype", {
         param: [this.storeUser.uid],
       }).then((res) => {
         const userInfo = res.getusertickettype[0];
-        console.log(userInfo);
+        console.log("AAa");
         if (userInfo.usingseatnumber !== 0) {
           //db seat 초기화
-          //this.logoutSeat();
-          this.$api("/api/logoutseat", {
-            param: [this.storeUser.uid],
-          }).then((res) => {
-            console.log(res);
-          });
+
           //로그아웃
           switch (userInfo.tickettype) {
             case 1:
@@ -102,13 +104,32 @@ export default {
                 console.log(res);
               });
               break;
-            case 2:
-              //정액제
-              //남은시간 갱신
-              //작성중
-              //퇴실 작업
-              //남은시간
+            case 2: {
+              //여기 에러
+              let currentDate = new Date().getTime();
+              console.log("CCC");
+              console.log(currentDate);
+              let usedTime = Number(currentDate) - Number(this.seatStartTime);
+              console.log("DDD");
+              console.log(usedTime);
+
+              let newExpirationTime = userInfo.ticketexpirationtime - usedTime;
+              console.log("EEE");
+              console.log(newExpirationTime);
+              this.$api("/api/updateuserpayrate", {
+                param: [newExpirationTime, this.storeUser.uid],
+              }).then((res) => {
+                console.log(res);
+              });
               break;
+            }
+            //정액제
+            //사용시간 = 현재시간 - 시작시간
+
+            // 남은시간 = 기존 남은시간 - 사용시간
+            //db에 남은시간 업로드
+
+            //seatingplan created될때 일괄초기화 코드 수정
             case 3:
               //기간제
               //로그아웃만
@@ -116,6 +137,12 @@ export default {
             default:
               break;
           }
+          //this.logoutSeat();
+          this.$api("/api/logoutseat", {
+            param: [this.storeUser.uid],
+          }).then((res) => {
+            console.log(res);
+          });
           this.$store.dispatch("logout");
           this.$swal.fire(`퇴실 완료`);
           this.exitTimeout();

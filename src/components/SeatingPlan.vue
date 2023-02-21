@@ -376,7 +376,9 @@
         border-radius: 10%;
       "
       v-if="isDayLimitVisible"
-    ></div>
+    >
+      여기 기간데이터 만들기
+    </div>
   </div>
 </template>
 
@@ -414,6 +416,7 @@ export default {
       },
       nowUsingSeat: [],
       clickedTicketType: 0,
+      usedTicketType: 0,
     };
   },
   computed: {
@@ -435,14 +438,60 @@ export default {
     //기간지났을시 시간,좌석 초기화작업
 
     //가져와서 nowUsingSeat에 넣기
+
     this.getSeat();
+
     //테스트
   },
   mounted() {
+    this.isProperTimeClick();
+
     this.clickedTicketType = this.$route.query.ctt;
+    console.log("AAA");
     console.log(this.clickedTicketType);
+    console.log("AAB");
+    console.log(this.usedTicketType);
   },
   methods: {
+    isProperTimeClick() {
+      this.$api("/api/getusertickettypeonly", {
+        param: [this.storeUser.uid],
+      }).then((res) => {
+        console.log(res.getusertickettypeonly[0].tickettype);
+        this.usedTicketType = res.getusertickettypeonly[0].tickettype;
+        console.log(Number(res.getusertickettypeonly[0].tickettype) == 0);
+        let ticketToName = "";
+        switch (this.usedTicketType) {
+          case 1:
+            ticketToName = "1회";
+            break;
+          case 2:
+            ticketToName = "정액";
+            break;
+          case 3:
+            ticketToName = "기간";
+            break;
+
+          default:
+            break;
+        }
+        if (
+          Number(res.getusertickettypeonly[0].tickettype) !==
+            Number(this.clickedTicketType) &&
+          Number(res.getusertickettypeonly[0].tickettype) !== 0
+        ) {
+          this.$swal.fire({
+            title: `결제하신 ${ticketToName} 이용권으로 이용해주세요`,
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+          setTimeout(() => {
+            this.$router.push({ path: "/main" });
+          }, 2000);
+        }
+      });
+    },
     async calcPayData(payType) {
       const currentDate = new Date();
       const startDate = currentDate.getTime();
@@ -553,7 +602,6 @@ export default {
       }
     },
     updateSeat(startdate, enddate) {
-      console.log("실행됨?");
       try {
         this.$api("/api/updateseat", {
           param: [
@@ -653,6 +701,8 @@ export default {
                 } else {
                   //
                 }
+                console.log("SBV");
+                console.log(res.getusertickettype[0].tickettype);
                 if (res.getusertickettype[0].tickettype == 0) {
                   //티켓이 없을경우
                   switch (this.clickedTicketType) {
@@ -671,10 +721,41 @@ export default {
                   }
                 } else if (res.getusertickettype[0].tickettype == 1) {
                   //1회용
-                } else if (res.getusertickettype[0].tickettype == 2) {
-                  //정액
                 } else if (res.getusertickettype[0].tickettype == 3) {
                   //기간
+                } else if (res.getusertickettype[0].tickettype == 2) {
+                  //정액
+                  const currentDate = new Date();
+                  const startDate = currentDate.getTime();
+                  let expirationDate = userInfo.ticketexpirationtime;
+                  let endDate = Number(startDate) + Number(expirationDate);
+                  //dbupload
+                  //updateseat
+                  try {
+                    this.$api("/api/updateseatpayrate", {
+                      param: [this.nowClickedSeat, userInfo.phonenumber],
+                    }).then((res) => {
+                      console.log(res);
+                    });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  try {
+                    this.$api("/api/updateseat", {
+                      param: [
+                        1,
+                        startDate,
+                        endDate,
+                        this.storeUser.uid,
+                        this.nowClickedSeat,
+                      ],
+                    }).then((res) => {
+                      console.log(res);
+                      console.log("updateseat complete");
+                    });
+                  } catch (error) {
+                    console.log(error);
+                  }
                 }
               });
             }

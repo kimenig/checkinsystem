@@ -258,6 +258,7 @@ export default {
                     uid: this.fullNumber,
                     uBranch: res.userData[0].usingbranch,
                     isUserLogined: 1,
+                    ticketType: res.userData[0].tickettype,
                   });
                   this.$swal.fire("로그인 완료.", "", "success");
                   this.$router.push({ path: "/main" });
