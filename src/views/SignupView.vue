@@ -107,6 +107,20 @@ import KioskBoard from "kioskboard";
 export default {
   name: "SignupView",
   components: {},
+  computed: {
+    storeAdmin() {
+      return this.$store.state.storeAdmin;
+    },
+    storeUser() {
+      return this.$store.state.storeUser;
+    },
+    sessionTime() {
+      return this.$store.state.sessionTime;
+    },
+    isLoggedIn() {
+      return this.$store.state.isLoggedIn;
+    },
+  },
   data() {
     return {
       inputPhoneFirst: "",
@@ -115,6 +129,19 @@ export default {
       inputPassword: "",
       inputPasswordVerify: "",
     };
+  },
+  created() {
+    if (this.storeUser.isUserLogined == 1) {
+      this.$swal.fire({
+        title: `로그아웃후 회원가입 해주세요.`,
+        timer: 2000,
+        showCancelButton: false,
+        showConfirmButton: false,
+      });
+      setTimeout(() => {
+        this.$router.push({ path: "/main" });
+      }, 2000);
+    }
   },
   mounted() {
     KioskBoard.init({

@@ -374,10 +374,135 @@
         height: 400px;
         background-color: white;
         border-radius: 10%;
+        padding: 30px;
       "
       v-if="isDayLimitVisible"
     >
-      여기 기간데이터 만들기
+      <div class="d-flex justify-content-between">
+        <p class="fs-3">{{ nowClickedSeat }} (1인석)</p>
+        <span style="font-size: 30px; cursor: pointer" @click="goToSelectSeat">
+          X
+        </span>
+      </div>
+      <div>
+        <p style="color: gray">요금제를 선택하세요.</p>
+      </div>
+      <div class="d-flex flex-wrap" style="gap: 15px">
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(11)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            20,000
+          </p>
+          <p>3일</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(12)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            40,000
+          </p>
+          <p>7일</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(13)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            70,000
+          </p>
+          <p>14일</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+          "
+          @click="calcPayData(14)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            130,000
+          </p>
+          <p>28일</p>
+        </button>
+        <button
+          style="
+            width: 170px;
+            height: 95px;
+            border: 1px solid gray;
+            background-color: white;
+            border-radius: 15px;
+            padding: 10px;
+          "
+          @click="calcPayData(15)"
+        >
+          <p
+            style="
+              border-bottom: 1px solid gray;
+              width: 100%;
+              height: 50%;
+              font-size: 21px;
+            "
+          >
+            250,000
+          </p>
+          <p>60일</p>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -417,6 +542,7 @@ export default {
       nowUsingSeat: [],
       clickedTicketType: 0,
       usedTicketType: 0,
+      seatStartTime: 0,
     };
   },
   computed: {
@@ -444,9 +570,14 @@ export default {
     //테스트
   },
   mounted() {
+    this.$api("/api/getseattime", {
+      param: [this.storeUser.uid],
+    }).then((res) => {
+      this.seatStartTime = res.getseattime[0].startdate;
+    });
+    this.clickedTicketType = this.$route.query.ctt;
     this.isProperTimeClick();
 
-    this.clickedTicketType = this.$route.query.ctt;
     console.log("AAA");
     console.log(this.clickedTicketType);
     console.log("AAB");
@@ -460,6 +591,8 @@ export default {
         console.log(res.getusertickettypeonly[0].tickettype);
         this.usedTicketType = res.getusertickettypeonly[0].tickettype;
         console.log(Number(res.getusertickettypeonly[0].tickettype) == 0);
+        this.usedSeatProper = res.getusertickettypeonly[0].usingseatnumber;
+
         let ticketToName = "";
         switch (this.usedTicketType) {
           case 1:
@@ -480,15 +613,29 @@ export default {
             Number(this.clickedTicketType) &&
           Number(res.getusertickettypeonly[0].tickettype) !== 0
         ) {
-          this.$swal.fire({
-            title: `결제하신 ${ticketToName} 이용권으로 이용해주세요`,
-            timer: 2000,
-            showCancelButton: false,
-            showConfirmButton: false,
-          });
-          setTimeout(() => {
-            this.$router.push({ path: "/main" });
-          }, 2000);
+          if (Number(this.clickedTicketType) !== 4) {
+            this.$swal.fire({
+              title: `결제하신 ${ticketToName} 이용권으로 이용해주세요`,
+              timer: 2000,
+              showCancelButton: false,
+              showConfirmButton: false,
+            });
+            setTimeout(() => {
+              this.$router.push({ path: "/main" });
+            }, 2000);
+          } else {
+            if (Number(this.usedSeatProper) == 0) {
+              this.$swal.fire({
+                title: `좌석을 이용중이지 않습니다.`,
+                timer: 2000,
+                showCancelButton: false,
+                showConfirmButton: false,
+              });
+              setTimeout(() => {
+                this.$router.push({ path: "/main" });
+              }, 2000);
+            }
+          }
         }
       });
     },
@@ -520,6 +667,13 @@ export default {
         //1회용 db업로드
         this.updatePay("1", startDate, endDate, expirationDate);
         this.updateSeat(startDate, endDate);
+        this.$swal.fire({
+          title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+          timer: 2000,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
+        this.exitTimeout();
       } else if ([6, 7, 8, 9, 10].includes(payType)) {
         //정액제제
         switch (payType) {
@@ -548,6 +702,13 @@ export default {
         }
         this.updatePay("2", startDate, endDate, expirationDate);
         this.updateSeat(startDate, endDate);
+        this.$swal.fire({
+          title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+          timer: 2000,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
+        this.exitTimeout();
       } else if ([11, 12, 13, 14, 15].includes(payType)) {
         //기간제
         switch (payType) {
@@ -576,10 +737,22 @@ export default {
         }
         this.updatePay("3", startDate, endDate, expirationDate);
         this.updateSeat(startDate, endDate);
+        this.$swal.fire({
+          title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+          timer: 2000,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
+        this.exitTimeout();
       } else {
         // code block for any other payType value
         console.log("Invalid payType value");
       }
+    },
+    exitTimeout() {
+      setTimeout(() => {
+        this.$router.push({ path: "/main" });
+      }, 2000);
     },
     updatePay(payType, startdate, enddate, expirationdate) {
       try {
@@ -693,68 +866,249 @@ export default {
                 param: [this.storeUser.uid],
               }).then((res) => {
                 const userInfo = res.getusertickettype[0];
+                console.log("CCCC");
                 console.log(userInfo);
-                if (userInfo.usingseatnumber !== 0) {
+                console.log(Number(userInfo.usingseatnumber));
+                if (
+                  Number(userInfo.usingseatnumber) !== 0 &&
+                  Number(this.clickedTicketType) !== 4
+                ) {
                   this.$swal.fire(
                     `이미 ${userInfo.usingseatnumber}번 좌석 사용중입니다.`
                   );
                 } else {
-                  //
-                }
-                console.log("SBV");
-                console.log(res.getusertickettype[0].tickettype);
-                if (res.getusertickettype[0].tickettype == 0) {
-                  //티켓이 없을경우
-                  switch (this.clickedTicketType) {
-                    case "1":
-                      this.isOneTimeVisible = true;
-                      break;
-                    case "2":
-                      this.isTimeLimitVisible = true;
-                      break;
-                    case "3":
-                      this.isDayLimitVisible = true;
+                  console.log("SBV");
+                  console.log(res.getusertickettype[0].tickettype);
+                  if (res.getusertickettype[0].tickettype == 0) {
+                    //티켓이 없을경우
+                    switch (this.clickedTicketType) {
+                      case "1":
+                        this.isOneTimeVisible = true;
+                        break;
+                      case "2":
+                        this.isTimeLimitVisible = true;
+                        break;
+                      case "3":
+                        this.isDayLimitVisible = true;
 
-                      break;
-                    default:
-                      break;
-                  }
-                } else if (res.getusertickettype[0].tickettype == 1) {
-                  //1회용
-                } else if (res.getusertickettype[0].tickettype == 3) {
-                  //기간
-                } else if (res.getusertickettype[0].tickettype == 2) {
-                  //정액
-                  const currentDate = new Date();
-                  const startDate = currentDate.getTime();
-                  let expirationDate = userInfo.ticketexpirationtime;
-                  let endDate = Number(startDate) + Number(expirationDate);
-                  //dbupload
-                  //updateseat
-                  try {
-                    this.$api("/api/updateseatpayrate", {
-                      param: [this.nowClickedSeat, userInfo.phonenumber],
-                    }).then((res) => {
-                      console.log(res);
+                        break;
+
+                      default:
+                        break;
+                    }
+                  } else if (Number(this.clickedTicketType) == 4) {
+                    //좌석이동 코드
+                    switch (Number(res.getusertickettype[0].tickettype)) {
+                      case 1:
+                        this.$swal.fire({
+                          title: `1회 이용권은 자리이동이 불가합니다.`,
+                          timer: 2000,
+                          showCancelButton: false,
+                          showConfirmButton: false,
+                        });
+                        this.exitTimeout();
+                        break;
+                      case 2:
+                        {
+                          //정액
+                          //기존seat db 삭제
+                          try {
+                            this.$api("/api/logoutseat", {
+                              param: [this.storeUser.uid],
+                            }).then((res) => {
+                              console.log(res);
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+                          //남은시간 다시정의
+                          const nowDate = new Date();
+                          const currDate = nowDate.getTime();
+
+                          let usedTime =
+                            Number(currDate) - Number(this.seatStartTime);
+
+                          let newExpirationTime =
+                            userInfo.ticketexpirationtime - usedTime;
+                          this.$api("/api/updateuserpayrate", {
+                            param: [newExpirationTime, this.storeUser.uid],
+                          });
+                          //db업로드
+
+                          const startDate = nowDate.getTime();
+                          let endDate =
+                            Number(startDate) + Number(newExpirationTime);
+                          //dbupload
+                          //updateseat
+                          try {
+                            this.$api("/api/updateseatpayrate", {
+                              param: [
+                                this.nowClickedSeat,
+                                userInfo.phonenumber,
+                              ],
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+                          try {
+                            this.$api("/api/updateseat", {
+                              param: [
+                                1,
+                                startDate,
+                                endDate,
+                                this.storeUser.uid,
+                                this.nowClickedSeat,
+                              ],
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+                          this.$swal.fire({
+                            title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+                            timer: 2000,
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                          });
+                          this.exitTimeout();
+                        }
+
+                        break;
+                      case 3:
+                        {
+                          //기간
+                          //기존 seat db삭제
+                          try {
+                            this.$api("/api/logoutseat", {
+                              param: [this.storeUser.uid],
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+
+                          //db업로드
+                          const currentDate = new Date();
+                          const startDate = currentDate.getTime();
+                          let endDate = userInfo.ticketendtime;
+                          //dbupload
+                          //updateseat
+                          try {
+                            this.$api("/api/updateseatpayrate", {
+                              param: [
+                                this.nowClickedSeat,
+                                userInfo.phonenumber,
+                              ],
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+                          try {
+                            this.$api("/api/updateseat", {
+                              param: [
+                                1,
+                                startDate,
+                                endDate,
+                                this.storeUser.uid,
+                                this.nowClickedSeat,
+                              ],
+                            });
+                          } catch (error) {
+                            console.log(error);
+                          }
+                          this.$swal.fire({
+                            title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+                            timer: 2000,
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                          });
+                          this.exitTimeout();
+                        }
+
+                        break;
+                      default:
+                        break;
+                    }
+                  } else if (
+                    res.getusertickettype[0].tickettype == 1 &&
+                    Number(this.clickedTicketType) !== 4
+                  ) {
+                    //1회용
+                  } else if (
+                    res.getusertickettype[0].tickettype == 3 &&
+                    Number(this.clickedTicketType !== 4)
+                  ) {
+                    //기간
+                    const currentDate = new Date();
+                    const startDate = currentDate.getTime();
+                    let endDate = userInfo.ticketendtime;
+                    //dbupload
+                    //updateseat
+                    try {
+                      this.$api("/api/updateseatpayrate", {
+                        param: [this.nowClickedSeat, userInfo.phonenumber],
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                    try {
+                      this.$api("/api/updateseat", {
+                        param: [
+                          1,
+                          startDate,
+                          endDate,
+                          this.storeUser.uid,
+                          this.nowClickedSeat,
+                        ],
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                    this.$swal.fire({
+                      title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+                      timer: 2000,
+                      showCancelButton: false,
+                      showConfirmButton: false,
                     });
-                  } catch (error) {
-                    console.log(error);
-                  }
-                  try {
-                    this.$api("/api/updateseat", {
-                      param: [
-                        1,
-                        startDate,
-                        endDate,
-                        this.storeUser.uid,
-                        this.nowClickedSeat,
-                      ],
-                    }).then((res) => {
-                      console.log(res);
-                      console.log("updateseat complete");
+                    this.exitTimeout();
+                  } else if (
+                    res.getusertickettype[0].tickettype == 2 &&
+                    Number(this.clickedTicketType) !== 4
+                  ) {
+                    //정액
+                    const currentDate = new Date();
+                    const startDate = currentDate.getTime();
+                    let expirationDate = userInfo.ticketexpirationtime;
+                    let endDate = Number(startDate) + Number(expirationDate);
+                    //dbupload
+                    //updateseat
+                    try {
+                      this.$api("/api/updateseatpayrate", {
+                        param: [this.nowClickedSeat, userInfo.phonenumber],
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                    try {
+                      this.$api("/api/updateseat", {
+                        param: [
+                          1,
+                          startDate,
+                          endDate,
+                          this.storeUser.uid,
+                          this.nowClickedSeat,
+                        ],
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                    this.$swal.fire({
+                      title: `${this.nowClickedSeat} 번 좌석 로그인 완료`,
+                      timer: 2000,
+                      showCancelButton: false,
+                      showConfirmButton: false,
                     });
-                  } catch (error) {
-                    console.log(error);
+                    this.exitTimeout();
+                  } else {
+                    //
                   }
                 }
               });

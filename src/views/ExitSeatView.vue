@@ -88,7 +88,6 @@ export default {
         param: [this.storeUser.uid],
       }).then((res) => {
         const userInfo = res.getusertickettype[0];
-        console.log("AAa");
         if (userInfo.usingseatnumber !== 0) {
           //db seat 초기화
 
@@ -100,39 +99,24 @@ export default {
               //this.updateUser();
               this.$api("/api/updateuserone", {
                 param: [this.storeUser.uid],
-              }).then((res) => {
-                console.log(res);
               });
               break;
             case 2: {
               //여기 에러
               let currentDate = new Date().getTime();
-              console.log("CCC");
-              console.log(currentDate);
               let usedTime = Number(currentDate) - Number(this.seatStartTime);
-              console.log("DDD");
-              console.log(usedTime);
 
               let newExpirationTime = userInfo.ticketexpirationtime - usedTime;
-              console.log("EEE");
-              console.log(newExpirationTime);
               this.$api("/api/updateuserpayrate", {
                 param: [newExpirationTime, this.storeUser.uid],
-              }).then((res) => {
-                console.log(res);
               });
               break;
             }
-            //정액제
-            //사용시간 = 현재시간 - 시작시간
-
-            // 남은시간 = 기존 남은시간 - 사용시간
-            //db에 남은시간 업로드
-
-            //seatingplan created될때 일괄초기화 코드 수정
             case 3:
               //기간제
-              //로그아웃만
+              this.$api("/api/updateuserpaydaylimit", {
+                param: [this.storeUser.uid],
+              });
               break;
             default:
               break;
@@ -140,14 +124,22 @@ export default {
           //this.logoutSeat();
           this.$api("/api/logoutseat", {
             param: [this.storeUser.uid],
-          }).then((res) => {
-            console.log(res);
           });
           this.$store.dispatch("logout");
-          this.$swal.fire(`퇴실 완료`);
+          this.$swal.fire({
+            title: `퇴실완료`,
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
           this.exitTimeout();
         } else {
-          this.$swal.fire(`좌석을 사용중이지 않습니다.`);
+          this.$swal.fire({
+            title: `좌석을 사용중이지 않습니다`,
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
           this.exitTimeout();
         }
       });
@@ -155,7 +147,7 @@ export default {
     exitTimeout() {
       setTimeout(() => {
         this.$router.push({ path: "/main" });
-      }, 3000);
+      }, 2000);
     },
   },
 };

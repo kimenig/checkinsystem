@@ -10,13 +10,6 @@
       margin: 0 auto;
     "
   >
-    <div>
-      store테스트
-      {{ storeAdmin }}
-      {{ storeUser }}
-      {{ sessionTime }}
-      {{ isLoggedIn }}
-    </div>
     <div
       class="d-flex justify-content-between"
       style="grid-row: 1/3; margin: 1%"
@@ -95,7 +88,7 @@
       style="
         grid-row: 7/16;
         display: grid;
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
         margin: 1%;
       "
     >
@@ -103,7 +96,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 80%"
+          style="width: 100%; height: 90%"
           @click="goToOneTime"
         >
           1회 이용권
@@ -113,7 +106,7 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 80%"
+          style="width: 100%; height: 90%"
           @click="goToPeriodicTime"
         >
           기간 이용권
@@ -124,19 +117,10 @@
         <button
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 80%"
+          style="width: 100%; height: 90%"
           @click="goToFlatTime"
         >
           정액 이용권
-        </button>
-      </div>
-      <div>
-        <button
-          type="button"
-          class="btn btn-outline-danger fs-2 shadow"
-          style="width: 100%; height: 80%"
-        >
-          사물함 이용권
         </button>
       </div>
     </div>
@@ -155,6 +139,7 @@
           type="button"
           class="btn btn-outline-danger fs-2 shadow"
           style="width: 100%; height: 100%"
+          @click="goToChangeSeat"
         >
           좌석 이동
         </button>
@@ -200,7 +185,6 @@ export default {
   },
 
   created() {
-    console.log(this.$store.state.storeAdmin);
     if (this.$store.state.storeAdmin.isAdminLogined == 1) {
       //
     } else {
@@ -227,6 +211,9 @@ export default {
     },
     goToPeriodicTime() {
       this.$router.push({ path: "/onetimeticket", query: { ctt: 3 } });
+    },
+    goToChangeSeat() {
+      this.$router.push({ path: "/onetimeticket", query: { ctt: 4 } });
     },
     goToExitSeat() {
       this.$router.push({
